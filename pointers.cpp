@@ -44,6 +44,15 @@ int main() {
 
     string s = text; // now actual string object (conversion via constructor in string class)
     // same things as doing string s(text);
-    
+    cout << "s = " << s << endl;
+    cout << "s address = " << &s << endl;
+
+    string * p2 = &s; // string pointer
+    cout << "p2 = " << p2 << endl;
+    cout << s.size() << endl;
+    cout << (*p2).size() << endl; // trying to call p2.size() then dereference it without parenthesis, but the pointer doesn't have a size member function
+    cout << p2->size() << endl;
+
+
     return 0;
 }
