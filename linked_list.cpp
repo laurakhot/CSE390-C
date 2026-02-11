@@ -26,8 +26,10 @@ class linked_list {
         count = 0;
     }
 
-    linked_list(linked_list * rhs) {
-        copy_from(rhs->front);
+    // copy constructor
+    linked_list(const linked_list & rhs) {
+        copy_from(rhs.front);
+        count = rhs.count;
     }
 
     ~linked_list() {
@@ -66,10 +68,38 @@ class linked_list {
         return out.str();
     }
 
+    // return reference to the linked list to support chaining
+    linked_list & operator=(const linked_list & rhs) { // mutating state so needs to be member function
+        if (this != &rhs) {
+            delete_nodes(front);
+            copy_from(rhs.front); 
+            count = rhs.count;
+        }
+        return *this;
+    }
+
+    const int & operator[](int index) const { // want to return reference to int inside node to make it modifiable
+        return node_at(index)->data;
+    }
+
+    int & operator[](int index) { // want to return reference to int inside node to make it modifiable
+        return node_at(index)->data;
+    }
+
     private: 
         list_node * front;
         list_node * back;
         int count;
+
+        // returns the node at a particular index 
+        list_node * node_at(int index) const {
+            list_node * curr = front; 
+            while(index > 0) {
+                curr = curr->next;
+                index--;
+            }
+            return curr;
+        }
 
         void delete_nodes(list_node * curr) {
             while (curr != nullptr) {
@@ -81,12 +111,31 @@ class linked_list {
 
         void copy_from(list_node * other) {
             if (other == nullptr) {
-                front = nullptr; 
+                front = back = nullptr; 
             } else {
-                
+                front = new list_node(other->data); // know at least one node exists (not empty)
+                list_node * curr1 = other->next; 
+                list_node * curr2 = front; 
+                while (curr1 != nullptr) {
+                    curr2->next = new list_node(curr1->data); 
+                    curr1 = curr1->next;
+                    curr2 = curr2-> next;
+                }
+                back = curr2;
             }
         }
 };
+
+void print(const linked_list & list) {
+    cout << "["; 
+    if (list.size() > 0) {
+        cout << list[0]; 
+        for (int i = 0; i < list.size(); i ++) {
+            cout << ", " << list[i]; 
+        }
+    }
+    cout << "]";
+}
 
 int main() {
     linked_list list; 
@@ -101,6 +150,24 @@ int main() {
         list.add(n);
     }
 
-    linked_list list2 = list; // linked_list list2(list1) -> copy constructor
+    linked_list list2 = list; // linked_list list2(list1) -> copy constructor (manipulating list 2 should not change list 1)
+    list2.add(6); 
+    cout << "list 1 = " << list.to_string() << endl; 
+    cout << "list 2 = " << list2.to_string() << endl;
+
+    linked_list list3; 
+    list3.add(10); 
+    list3.add(20); 
+    cout << "list 3 = " << list3.to_string() << endl; 
+    list3 = list; // assignment operator (list 3 should be assigned everything in list 1; without overloading this is shallow copy)
+    cout << "list 3 = " << list3.to_string() << endl; 
+
+    list = list2 = list2; 
+
+    for (int i = 0; i < list.size(); i++) {
+        // cout << list[i] << endl;
+        list[i] *= 2;
+        // cout << list[i] << endl;
+    }
     return 0;
 }
