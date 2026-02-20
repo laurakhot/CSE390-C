@@ -19,5 +19,6 @@ int main() {
     bool b = y == 8 + x++;
     // operator=(operator==(y, operator+(8, operator++(x))))
     cout << "x = " << x << ", y = " << y << " , b = " << endl;
+    // operator<<(operator<<(operator<<(operator<<(operator<<(cout, "x = "), x), ", y"), y), endl)
     return 0;
 }
